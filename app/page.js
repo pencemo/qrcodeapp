@@ -10,8 +10,8 @@ export default function HomePage() {
   const [isLoading, setLoadign] = useState(false);
   const [isError, setError] = useState("");
 
-  const auth = localStorage.getItem("auth");
   const handleSubmit = () => {
+    const auth = localStorage.getItem("auth");
     if (auth === "true") {
       router.push("/dashboard");
     } else {
@@ -45,7 +45,7 @@ export default function HomePage() {
             onClick={handleSubmit}
             className="bg-green-600 text-white px-4 py-2.5 text-sm font-medium rounded-md shadow"
           >
-            {auth ? "Dashboard" : "Login"}
+            Dashboard
           </button>
         </div>
       </div>
