@@ -2,11 +2,25 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
   const [links, setLinks] = useState([]);
   const [editing, setEditing] = useState(null);
   const [newDestination, setNewDestination] = useState("");
+  const [isAuth, setIsAuth] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredLinks, setFilteredLinks] = useState([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    const auth = localStorage.getItem("auth");
+    if (auth === "true") {
+      setIsAuth(true);
+    } else {
+      router.push("/login"); // redirect if not logged in
+    }
+  }, [router]);
 
   // Fetch all links
   async function fetchLinks() {
@@ -16,7 +30,9 @@ export default function Dashboard() {
       // Generate QR for each link
       const withQR = await Promise.all(
         data.links.map(async (link) => {
-          const qrImage = await QRCode.toDataURL(`${process.env.NEXT_PUBLIC_BASE_URL}/${link.shortId}`);
+          const qrImage = await QRCode.toDataURL(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/${link.shortId}`
+          );
           return { ...link, qrImage };
         })
       );
@@ -27,6 +43,14 @@ export default function Dashboard() {
   useEffect(() => {
     fetchLinks();
   }, []);
+
+  useEffect(() =>{
+    setFilteredLinks(
+      links.filter((link) =>
+        link.shortId.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+  }, [searchTerm, links]);
 
   // Update destination
   async function handleUpdate(id) {
@@ -47,16 +71,24 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-8">
-        <div className="flex justify-between items-center mb-4">
-      <h1 className="text-2xl font-bold mb-4">📋 QR Codes Dashboard</h1>
-      <Link href="/">
-        <button className="bg-green-600 text-white px-4 py-2 rounded shadow">
-          Back
-        </button>
-      </Link>
-
-        </div>
+    <div className="p-8 w-full max-w-[90rem] mx-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold mb-4">QR Codes Dashboard</h1>
+        <Link href="/">
+          <button className="bg-green-600 text-white px-4 py-2 rounded shadow">
+            Back
+          </button>
+        </Link>
+      </div>
+      <div>
+        <input
+          type="text"
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Enter destination URL"
+          className="border p-2 w-full mb-4"
+        />
+        
+      </div>
       <table className="w-full border">
         <thead>
           <tr className="bg-gray-200">
@@ -66,8 +98,8 @@ export default function Dashboard() {
             <th className="p-2 border">Actions</th>
           </tr>
         </thead>
-        <tbody>
-          {links.map((link) => (
+        <tbody> 
+          {filteredLinks.map((link) => (
             <tr key={link._id} className="text-center">
               <td className="p-2 border">
                 <img src={link.qrImage} alt="QR" width={80} />
@@ -93,48 +125,48 @@ export default function Dashboard() {
                 )}
               </td>
               <td className="p-2 border space-x-2">
-  {editing === link._id ? (
-    <>
-      <button
-        onClick={() => handleUpdate(link._id)}
-        className="bg-green-500 text-white px-2 py-1 rounded"
-      >
-        Save
-      </button>
-      <button
-        onClick={() => setEditing(null)}
-        className="bg-gray-500 text-white px-2 py-1 rounded"
-      >
-        Cancel
-      </button>
-    </>
-  ) : (
-    <>
-      <button
-        onClick={() => {
-          setEditing(link._id);
-          setNewDestination(link.destination);
-        }}
-        className="bg-yellow-500 text-white px-2 py-1 rounded"
-      >
-        Edit
-      </button>
-      <button
-        onClick={() => handleDelete(link._id)}
-        className="bg-red-500 text-white px-2 py-1 rounded"
-      >
-        Delete
-      </button>
+                {editing === link._id ? (
+                  <>
+                    <button
+                      onClick={() => handleUpdate(link._id)}
+                      className="bg-green-500 text-white px-2 py-1 rounded"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setEditing(null)}
+                      className="bg-gray-500 text-white px-2 py-1 rounded"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => {
+                        setEditing(link._id);
+                        setNewDestination(link.destination);
+                      }}
+                      className="bg-yellow-500 text-white px-2 py-1 rounded"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(link._id)}
+                      className="bg-red-500 text-white px-2 py-1 rounded"
+                    >
+                      Delete
+                    </button>
 
-      {/* ✅ Download QR Button */}
-      <a href={link.qrImage} download={`qr-${link.shortId}.png`}>
-        <button className="bg-purple-600 text-white px-2 py-1 rounded">
-          Download
-        </button>
-      </a>
-    </>
-  )}
-</td>
+                    {/* ✅ Download QR Button */}
+                    <a href={link.qrImage} download={`qr-${link.shortId}.png`}>
+                      <button className="bg-purple-600 text-white px-2 py-1 rounded">
+                        Download
+                      </button>
+                    </a>
+                  </>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
