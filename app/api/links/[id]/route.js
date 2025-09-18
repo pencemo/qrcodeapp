@@ -5,10 +5,11 @@ import Link from "@/models/Link";
 export async function PATCH(req, { params }) {
   try {
     await connectDB();
-    const { destination } = await req.json();
+    const { destination, isRedirect } = await req.json();
+  
     const updated = await Link.findByIdAndUpdate(
       params.id,
-      { destination },
+      { destination, isRedirect },
       { new: true }
     );
     return NextResponse.json({ success: true, updated });

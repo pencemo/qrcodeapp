@@ -9,7 +9,13 @@ export async function POST(req) {
     const { destination } = await req.json();
 
     const shortId = nanoid(6);
-    const newLink = await Link.create({ shortId, destination });
+    let id = 1101
+    const lastLink = await Link.findOne().sort({ createdAt: -1 });
+
+    if(lastLink){
+        id = Number(lastLink.shortId) + 1
+    }
+    const newLink = await Link.create({ shortId: id, destination });
 
     return NextResponse.json({
       success: true,

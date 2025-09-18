@@ -96,6 +96,7 @@ export default function Dashboard() {
             <th className="p-2 border">Short URL</th>
             <th className="p-2 border">Destination</th>
             <th className="p-2 border">Actions</th>
+            <th className="p-2 border">Actions</th>
           </tr>
         </thead>
         <tbody> 
@@ -166,6 +167,56 @@ export default function Dashboard() {
                     </a>
                   </>
                 )}
+              </td>
+              <td className="p-2 border">
+              <label className="inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={link.isRedirect}
+                  onChange={async () => {
+                    const newValue = !link.isRedirect;
+
+                    // ✅ Optimistically update local state
+                    setLinks((prev) =>
+                      prev.map((l) =>
+                        l._id === link._id ? { ...l, isRedirect: newValue } : l
+                      )
+                    );
+
+                    // ✅ Then call API
+                    try {
+                      const res = await fetch(`/api/links/${link._id}`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ isRedirect: newValue }),
+                      });
+
+                      if (!res.ok) {
+                        throw new Error("Failed to update");
+                      }
+
+                      const updated = await res.json();
+
+                      // ✅ Ensure state sync with server
+                      setLinks((prev) =>
+                        prev.map((l) => (l._id === updated._id ? updated : l))
+                      );
+                    } catch (error) {
+                      console.error("Toggle failed", error);
+
+                      // ❌ Rollback if API fails
+                      setLinks((prev) =>
+                        prev.map((l) =>
+                          l._id === link._id ? { ...l, isRedirect: link.isRedirect } : l
+                        )
+                      );
+                    }
+                  }}
+                />
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-green-500 relative after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+              </label>
+
               </td>
             </tr>
           ))}

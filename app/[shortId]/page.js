@@ -1,16 +1,35 @@
-import { redirect } from "next/navigation";
-import { connectDB } from "@/lib/db";
+import {connectDB} from "@/lib/db";
 import Link from "@/models/Link";
+import { redirect } from "next/navigation";
 
+// ✅ must be default export
 export default async function RedirectPage({ params }) {
-  const { shortId } = await params;   // ✅ Await params
-
   await connectDB();
-  const link = await Link.findOne({ shortId });
+
+  const link = await Link.findOne({ shortId: params.shortId });
 
   if (!link) {
     return <h1>404 - QR not found</h1>;
   }
 
-  redirect(link.destination);
+  if (link.isRedirect) {
+    // ✅ Redirect only works in Server Components
+    redirect(link.destination);
+  }
+
+  // ✅ If isRedirect = false → show a page instead
+  return (
+    <div className="flex flex-col items-center justify-center h-screen text-center">
+      <h1 className="text-2xl font-bold">📌 QR Link</h1>
+      <p className="mt-2 font-medium text-xl">ID : {link.shortId}</p>
+      <a
+        href={link.destination}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
+      >
+        Go to Destination
+      </a>
+    </div>
+  );
 }
