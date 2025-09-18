@@ -30,8 +30,13 @@ export default function Dashboard() {
       // Generate QR for each link
       const withQR = await Promise.all(
         data.links.map(async (link) => {
-          const qrImage = await QRCode.toDataURL(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/${link.shortId}`
+          const qrImage = await QRCode.toString(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/${link.shortId}`, {
+              type: "svg",
+              errorCorrectionLevel: "M",
+              margin: 1,
+              width: 100,
+            }
           );
           return { ...link, qrImage };
         })
@@ -70,6 +75,19 @@ export default function Dashboard() {
     fetchLinks();
   }
 
+  function downloadSvg(qr, id) {
+    if (!qr) return;
+    const blob = new Blob([qr], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Qrcode-${id}.svg`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="p-8 w-full max-w-[90rem] mx-auto">
       <div className="flex justify-between items-center mb-4">
@@ -103,7 +121,11 @@ export default function Dashboard() {
           {filteredLinks.map((link) => (
             <tr key={link._id} className="text-center">
               <td className="p-2 border">
-                <img src={link.qrImage} alt="QR" width={80} />
+                <div
+        className="mt-4 "
+        dangerouslySetInnerHTML={{ __html: link.qrImage }}
+        aria-hidden={link.qrImage ? "false" : "true"}
+      />
               </td>
               <td className="p-2 border">
                 <a
@@ -160,11 +182,9 @@ export default function Dashboard() {
                     </button> */}
 
                     {/* ✅ Download QR Button */}
-                    <a href={link.qrImage} download={`qr-${link.shortId}.png`}>
-                      <button className="bg-purple-600 text-white px-2 py-1 rounded">
+                      <button onClick={()=>downloadSvg(link.qrImage, link.shortId)} className="bg-purple-600 text-white px-2 py-1 rounded">
                         Download
                       </button>
-                    </a>
                   </>
                 )}
               </td>

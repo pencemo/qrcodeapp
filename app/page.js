@@ -9,6 +9,7 @@ export default function HomePage() {
   const router = useRouter();
   const [isLoading, setLoadign] = useState(false);
   const [isError, setError] = useState("");
+  const [id, setId]=useState('')
 
   const handleSubmit = () => {
     const auth = localStorage.getItem("auth");
@@ -30,10 +31,29 @@ export default function HomePage() {
 
     const data = await res.json();
     if (data.success) {
-      const qrImage = await QRCode.toDataURL(data.shortUrl);
+      const qrImage = await QRCode.toString(data.shortUrl, {
+        type: "svg",
+        errorCorrectionLevel: "M",
+        margin: 1,
+        width: 300,
+      });
       setQr(qrImage);
+      setId(data.id)
     }
     setLoadign(false);
+  }
+
+  function downloadSvg() {
+    if (!qr) return;
+    const blob = new Blob([qr], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Qrcode-${id}.svg`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }
 
   return (
@@ -69,16 +89,21 @@ export default function HomePage() {
       {isError && <p className="text-red-500 text-sm mt-2">{isError}</p>}
       {qr && (
         <div className="mt-6 flex flex-col items-center space-y-3 ">
-          <img src={qr} className="border border-gray-200 " alt="QR Code" />
+          {/* <img src={qr} className="border border-gray-200 " alt="QR Code" /> */}
+          <div
+        className="mt-4 "
+        dangerouslySetInnerHTML={{ __html: qr }}
+        aria-hidden={qr ? "false" : "true"}
+      />
 
           <p className=" text-sm text-gray-600">Scan or share this QR</p>
 
           {/* ✅ Download Button */}
-          <a href={qr} download="qrcode.png">
-            <button className="bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium shadow">
+            <button onClick={downloadSvg} className="bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium shadow">
               Download QR
             </button>
-          </a>
+          {/* <a href={qr} download="qrcode.png">
+          </a> */}
         </div>
       )}
 

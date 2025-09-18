@@ -8,7 +8,6 @@ export async function POST(req) {
     await connectDB();
     const { destination } = await req.json();
 
-    const shortId = nanoid(6);
     let id = 1101
     const lastLink = await Link.findOne().sort({ createdAt: -1 });
 
@@ -19,7 +18,8 @@ export async function POST(req) {
 
     return NextResponse.json({
       success: true,
-      shortUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/${shortId}`,
+      id: newLink.shortId,
+      shortUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/${id}`,
     });
   } catch (err) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
