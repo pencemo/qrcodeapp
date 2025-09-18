@@ -152,12 +152,12 @@ export default function Dashboard() {
                     >
                       Edit
                     </button>
-                    <button
+                    {/* <button
                       onClick={() => handleDelete(link._id)}
                       className="bg-red-500 text-white px-2 py-1 rounded"
                     >
                       Delete
-                    </button>
+                    </button> */}
 
                     {/* ✅ Download QR Button */}
                     <a href={link.qrImage} download={`qr-${link.shortId}.png`}>
