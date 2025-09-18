@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import QRImg from "@/components/QRImg";
 
 export default function Dashboard() {
   const [links, setLinks] = useState([]);
@@ -37,7 +38,7 @@ export default function Dashboard() {
               type: "svg",
               errorCorrectionLevel: "M",
               margin: 1,
-              width: 100,
+              width: 200,
             }
           );
           return { ...link, qrImage };
@@ -107,65 +108,61 @@ export default function Dashboard() {
 
   return (
     <div className="p-8 w-full max-w-[90rem] mx-auto">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold mb-4">QR Codes Dashboard</h1>
+        <h1 className="text-2xl font-bold ">QR Codes Dashboard</h1>
+        <p className="text-sm text-neutral-500">Manage all qr codes and download for usage</p>
+      <div className="flex justify-between items-center mt-10 mb-8">
+        <input
+          type="text"
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search..."
+          className="border px-4 py-1.5 rounded-md border-neutral-300 placeholder:text-sm w-full max-w-md "
+        />
         <div className="space-x-2.5">
-          <button onClick={handleDlZip} className="bg-red-600 text-white px-4 py-2 rounded shadow">
+          <button onClick={handleDlZip} className="bg-violet-600 cursor-pointer text-white px-4 py-2 rounded-md text-sm font-medium shadow">
             Download Zip
           </button>
         <Link href="/">
-          <button className="bg-green-600 text-white px-4 py-2 rounded shadow">
+          <button className="border cursor-pointer border-neutral-300 px-4 py-2 rounded-md text-sm font-medium shadow">
             Back
           </button>
         </Link>
         </div>
       </div>
       <div>
-        <input
-          type="text"
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Enter destination URL"
-          className="border p-2 w-full mb-4"
-        />
+       
         
       </div>
-      <table className="w-full border">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="p-2 border">No</th>
-            <th className="p-2 border">QR Code</th>
-            <th className="p-2 border">Short URL</th>
-            <th className="p-2 border">Destination</th>
-            <th className="p-2 border">Actions</th>
-            <th className="p-2 border">Actions</th>
+      <div className="rounded-2xl overflow-hidden border border-neutral-300 shadow-md">
+      <table className="w-full  ">
+        <thead className="">
+          <tr className="bg-neutral-100 border-b border-neutral-300">
+            <th className="p-3 font-medium  ">No</th>
+            <th className="p-3 font-medium bor">Short URL</th>
+            <th className="p-3 font-medium bor">Destination</th>
+            <th className="p-3 font-medium bor">Actions</th>
+            <th className="p-3 font-medium bor">Actions</th>
           </tr>
         </thead>
         <tbody> 
-          {filteredLinks.map((link, i) => (
-            <tr key={link._id} className="text-center">
-              <td className="p-2 border">
+          {filteredLinks.map((link, i) => ( 
+            <tr key={link._id} className="text-center border-b border-neutral-200 odd:bg-neutral-50 hover:bg-neutral-100 transition-all duration-300">
+              <td className="p-2 font-medium">
                 {i+1}
               </td>
-              <td className="p-2 border">
-                <div
-        className="mt-4 "
-        dangerouslySetInnerHTML={{ __html: link.qrImage }}
-        aria-hidden={link.qrImage ? "false" : "true"}
-      />
-              </td>
-              <td className="p-2 border">
+              
+              <td className="p-2 border-l border-neutral-300 ">
                 <a
                   href={`/${link.shortId}`}
                   target="_blank"
-                  className="text-blue-600 underline"
+                  className="text-blue-700 italic"
                 >
                   {process.env.NEXT_PUBLIC_BASE_URL}/{link.shortId}
                 </a>
               </td>
-              <td className="p-2 border">
+              <td className="p-2 border-l border-neutral-300 ">
                 {editing === link._id ? (
                   <input
-                    className="border p-1"
+                    className="border-2 border-violet-200   px-3 rounded-md  p-1"
                     value={newDestination}
                     onChange={(e) => setNewDestination(e.target.value)}
                   />
@@ -173,7 +170,7 @@ export default function Dashboard() {
                   link.destination
                 )}
               </td>
-              <td className="p-2 border space-x-2">
+              <td className="p-2 border-l border-neutral-300   space-x-3">
                 {editing === link._id ? (
                   <>
                     <button
@@ -191,14 +188,15 @@ export default function Dashboard() {
                   </>
                 ) : (
                   <>
+                   <QRImg qrImage={link.qrImage} id={link.shortId}/>
                     <button
                       onClick={() => {
                         setEditing(link._id);
                         setNewDestination(link.destination);
                       }}
-                      className="bg-yellow-500 text-white px-2 py-1 rounded"
+                      className="bg-emerald-600 cursor-pointer text-white px-3 py-2 rounded-md text-sm font-medium"
                     >
-                      Edit
+                      Edit URL
                     </button>
                     {/* <button
                       onClick={() => handleDelete(link._id)}
@@ -208,13 +206,13 @@ export default function Dashboard() {
                     </button> */}
 
                     {/* ✅ Download QR Button */}
-                      <button onClick={()=>downloadSvg(link.qrImage, link.shortId)} className="bg-purple-600 text-white px-2 py-1 rounded">
+                      <button onClick={()=>downloadSvg(link.qrImage, link.shortId)} className="bg-violet-600 cursor-pointer text-white px-3 py-2 rounded-md text-sm font-medium">
                         Download
                       </button>
                   </>
                 )}
               </td>
-              <td className="p-2 border">
+              <td className="p-2 border-l border-neutral-300 ">
               <label className="inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
@@ -260,7 +258,7 @@ export default function Dashboard() {
                     }
                   }}
                 />
-                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-green-500 relative after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-violet-500 relative after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white  after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
               </label>
 
               </td>
@@ -268,6 +266,7 @@ export default function Dashboard() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
