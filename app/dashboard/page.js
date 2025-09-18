@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 export default function Dashboard() {
   const [links, setLinks] = useState([]);
@@ -88,15 +90,35 @@ export default function Dashboard() {
     URL.revokeObjectURL(url);
   }
 
+  const handleDlZip = async()=>{
+    const zip = new JSZip();
+    for (const link of links) {
+      try {
+        const svg = link.qrImage
+        zip.file(`qr-${link.shortId}.svg`, svg);
+      } catch (err) {
+        console.error("Failed for", link.shortId, err);
+      }
+    }
+  
+    const content = await zip.generateAsync({ type: "blob" });
+    saveAs(content, "qrcodes.zip");
+  }
+
   return (
     <div className="p-8 w-full max-w-[90rem] mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold mb-4">QR Codes Dashboard</h1>
+        <div className="space-x-2.5">
+          <button onClick={handleDlZip} className="bg-red-600 text-white px-4 py-2 rounded shadow">
+            Download Zip
+          </button>
         <Link href="/">
           <button className="bg-green-600 text-white px-4 py-2 rounded shadow">
             Back
           </button>
         </Link>
+        </div>
       </div>
       <div>
         <input
@@ -110,6 +132,7 @@ export default function Dashboard() {
       <table className="w-full border">
         <thead>
           <tr className="bg-gray-200">
+            <th className="p-2 border">No</th>
             <th className="p-2 border">QR Code</th>
             <th className="p-2 border">Short URL</th>
             <th className="p-2 border">Destination</th>
@@ -118,8 +141,11 @@ export default function Dashboard() {
           </tr>
         </thead>
         <tbody> 
-          {filteredLinks.map((link) => (
+          {filteredLinks.map((link, i) => (
             <tr key={link._id} className="text-center">
+              <td className="p-2 border">
+                {i+1}
+              </td>
               <td className="p-2 border">
                 <div
         className="mt-4 "
