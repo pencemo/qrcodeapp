@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { HiOutlineQrCode } from "react-icons/hi2";
 
 function QRImg({ qrImage, id = "" }) {
   const [isOpen, setOpen] = useState(false);
@@ -7,9 +8,9 @@ function QRImg({ qrImage, id = "" }) {
       <div>
         <button
           onClick={() => setOpen(true)}
-          className="text-sm cursor-pointer font-medium py-2 px-3 border border-neutral-200 shadow rounded-md"
+          className="text-sm cursor-pointer font-medium py-2 px-3 border gap-1 border-neutral-200 shadow rounded-md flex items-center justify-center"
         >
-          View QR
+          <span className="max-md:hidden">View QR</span> <HiOutlineQrCode />
         </button>
       </div>
       {isOpen && (

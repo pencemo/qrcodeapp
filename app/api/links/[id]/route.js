@@ -6,9 +6,12 @@ export async function PATCH(req, { params }) {
   try {
     await connectDB();
     const { destination, isRedirect } = await req.json();
-  
+    
+    // Await the params.id before using it
+    const { id } = await params;
+    
     const updated = await Link.findByIdAndUpdate(
-      params.id,
+      id,
       { destination, isRedirect },
       { new: true }
     );

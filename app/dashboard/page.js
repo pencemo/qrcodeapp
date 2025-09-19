@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import QRImg from "@/components/QRImg";
+import { HiMiniArrowDownTray, HiOutlinePencilSquare } from "react-icons/hi2";
 
 export default function Dashboard() {
   const [links, setLinks] = useState([]);
@@ -110,7 +111,7 @@ export default function Dashboard() {
     <div className="p-8 w-full max-w-[90rem] mx-auto">
         <h1 className="text-2xl font-bold ">QR Codes Dashboard</h1>
         <p className="text-sm text-neutral-500">Manage all qr codes and download for usage</p>
-      <div className="flex justify-between items-center mt-10 mb-8">
+      <div className="flex max-md:flex-col gap-3 justify-between items-center mt-10 mb-8">
         <input
           type="text"
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -132,7 +133,7 @@ export default function Dashboard() {
        
         
       </div>
-      <div className="rounded-2xl overflow-hidden border border-neutral-300 shadow-md">
+      <div className="rounded-2xl overflow-auto border border-neutral-300 shadow-md">
       <table className="w-full  ">
         <thead className="">
           <tr className="bg-neutral-100 border-b border-neutral-300">
@@ -170,7 +171,7 @@ export default function Dashboard() {
                   link.destination
                 )}
               </td>
-              <td className="p-2 border-l border-neutral-300   space-x-3">
+              <td className="p-2 border-l border-neutral-300 flex items-center justify-center max-md:flex-col gap-2  ">
                 {editing === link._id ? (
                   <>
                     <button
@@ -194,9 +195,9 @@ export default function Dashboard() {
                         setEditing(link._id);
                         setNewDestination(link.destination);
                       }}
-                      className="bg-emerald-600 cursor-pointer text-white px-3 py-2 rounded-md text-sm font-medium"
+                      className="bg-emerald-600 cursor-pointer gap-1 text-white px-3 py-2 rounded-md text-sm font-medium flex items-center justify-center"
                     >
-                      Edit URL
+                      <span className="max-md:hidden">Edit URL</span><HiOutlinePencilSquare />
                     </button>
                     {/* <button
                       onClick={() => handleDelete(link._id)}
@@ -206,8 +207,8 @@ export default function Dashboard() {
                     </button> */}
 
                     {/* ✅ Download QR Button */}
-                      <button onClick={()=>downloadSvg(link.qrImage, link.shortId)} className="bg-violet-600 cursor-pointer text-white px-3 py-2 rounded-md text-sm font-medium">
-                        Download
+                      <button onClick={()=>downloadSvg(link.qrImage, link.shortId)} className="bg-violet-600 cursor-pointer text-white px-3 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-1">
+                        <span className="max-md:hidden">Download</span> <HiMiniArrowDownTray />
                       </button>
                   </>
                 )}
