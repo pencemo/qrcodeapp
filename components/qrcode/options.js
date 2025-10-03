@@ -4,7 +4,7 @@ export const QRmodels = [
     shape: "square",
     width: 150,
     height: 150,
-    data: "https://qr-code-styling.com",
+    data: "https://qrcodeapp-seven.vercel.app/",
     // imag10
     //   "https://cdn.freebiesupply.com/images/large/2x/facebook-logo-circle-transparent.png",
     margin: 10,
@@ -74,7 +74,7 @@ export const QRmodels = [
     shape: "square",
     width: 150,
     height: 150,
-    data: "https://qr-code-styling.com",
+    data: "https://qrcodeapp-seven.vercel.app/",
     margin: 10,
     qrOptions: {
       typeNumber: "0",
@@ -154,7 +154,7 @@ export const QRmodels = [
     shape: "square",
     width: 150,
     height: 150,
-    data: "https://qr-code-styling.com",
+    data: "https://qrcodeapp-seven.vercel.app/",
     margin: 10,
     qrOptions: {
       typeNumber: "0",
@@ -235,7 +235,7 @@ export const QRmodels = [
     shape: "square",
     width: 150,
     height: 150,
-    data: "https://qr-code-styling.com",
+    data: "https://qrcodeapp-seven.vercel.app/",
     margin: 10,
     qrOptions: {
       typeNumber: "0",

@@ -29,13 +29,13 @@ import ModeQr from "@/components/qrcode/ModeQr";
 import { QRmodels } from "@/components/qrcode/options";
 
 function page() {
-  const [dataURL, setDataUrl] = useState("http://qr-code-styling.com");
+  const [dataURL, setDataUrl] = useState("https://qrcodeapp-seven.vercel.app/");
   const [logo, setLogo] = useState(null);
   const [options, setOptions] = useState({
     width: 200,
     height: 200,
     type: "svg",
-    data: "http://qr-code-styling.com",
+    data: "https://qrcodeapp-seven.vercel.app/",
     image:
       "https://assets.vercel.com/image/upload/front/favicon/vercel/180x180.png",
     margin: 10,
