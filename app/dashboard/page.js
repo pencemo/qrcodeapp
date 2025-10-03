@@ -26,6 +26,15 @@ export default function Dashboard() {
     }
   }, [router]);
 
+  const handleSubmit = () => {
+    const auth = localStorage.getItem("auth");
+    if (auth === "true") {
+      router.push("/dynamic-qr");
+    } else {
+      router.push("/login");
+    }
+  };
+
   // Fetch all links
   async function fetchLinks() {
     const res = await fetch("/api/links");
@@ -119,8 +128,8 @@ export default function Dashboard() {
           className="border px-4 py-1.5 rounded-md border-neutral-300 placeholder:text-sm w-full max-w-md "
         />
         <div className="space-x-2.5">
-          <button onClick={handleDlZip} className="bg-violet-600 cursor-pointer text-white px-4 py-2 rounded-md text-sm font-medium shadow">
-            Download Zip
+          <button onClick={handleSubmit} className="bg-violet-600 cursor-pointer text-white px-4 py-2 rounded-md text-sm font-medium shadow">
+            Create QR
           </button>
         <Link href="/">
           <button className="border cursor-pointer border-neutral-300 px-4 py-2 rounded-md text-sm font-medium shadow">
